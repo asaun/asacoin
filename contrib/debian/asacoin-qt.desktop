@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Asacoin
+Comment=Asacoin P2P Cryptocurrency
+Comment[fr]=Asacoin, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=Asacoin, eşten eşe kriptografik sanal para birimi
+Exec=asacoin-qt %u
+Terminal=false
+Type=Application
+Icon=asacoin128
+MimeType=x-scheme-handler/asacoin;
+Categories=Office;Finance;

@@ -1,0 +1,6 @@
+usr/local/bin/asacoin-qt usr/bin
+share/pixmaps/asacoin32.xpm usr/share/pixmaps
+share/pixmaps/asacoin16.xpm usr/share/pixmaps
+share/pixmaps/asacoin128.png usr/share/pixmaps
+debian/asacoin-qt.desktop usr/share/applications
+debian/asacoin-qt.protocol usr/share/kde4/services/

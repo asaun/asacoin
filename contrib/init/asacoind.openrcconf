@@ -1,0 +1,27 @@
+# /etc/conf.d/asacoind: config file for /etc/init.d/asacoind
+
+# Config file location
+#ASACOIND_CONFIGFILE="/etc/asacoin/asacoin.conf"
+
+# What directory to write pidfile to?  (created and owned by $ASACOIND_USER)
+#ASACOIND_PIDDIR="/var/run/asacoind"
+
+# What filename to give the pidfile
+#ASACOIND_PIDFILE="${ASACOIND_PIDDIR}/asacoind.pid"
+
+# Where to write asacoind data (be mindful that the blockchain is large)
+#ASACOIND_DATADIR="/var/lib/asacoind"
+
+# User and group to own asacoind process
+#ASACOIND_USER="asacoin"
+#ASACOIND_GROUP="asacoin"
+
+# Path to asacoind executable
+#ASACOIND_BIN="/usr/bin/asacoind"
+
+# Nice value to run asacoind under
+#ASACOIND_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+ASACOIND_OPTS="-disablewallet"
+

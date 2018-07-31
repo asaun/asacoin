@@ -1,0 +1,86 @@
+#!/sbin/runscript
+
+# backward compatibility for existing gentoo layout 
+#
+if [ -d "/var/lib/asacoin/.asacoin" ]; then
+	ASACOIND_DEFAULT_DATADIR="/var/lib/asacoin/.asacoin"
+else
+	ASACOIND_DEFAULT_DATADIR="/var/lib/asacoind"
+fi
+
+ASACOIND_CONFIGFILE=${ASACOIND_CONFIGFILE:-/etc/asacoin/asacoin.conf}
+ASACOIND_PIDDIR=${ASACOIND_PIDDIR:-/var/run/asacoind}
+ASACOIND_PIDFILE=${ASACOIND_PIDFILE:-${ASACOIND_PIDDIR}/asacoind.pid}
+ASACOIND_DATADIR=${ASACOIND_DATADIR:-${ASACOIND_DEFAULT_DATADIR}}
+ASACOIND_USER=${ASACOIND_USER:-asacoin}
+ASACOIND_GROUP=${ASACOIND_GROUP:-asacoin}
+ASACOIND_BIN=${ASACOIND_BIN:-/usr/bin/asacoind}
+
+name="Asacoin Core Daemon"
+description="Asacoin crypto-currency p2p network daemon"
+
+command="/usr/bin/asacoind"
+command_args="-pid=\"${ASACOIND_PIDFILE}\" \
+		-conf=\"${ASACOIND_CONFIGFILE}\" \
+		-datadir=\"${ASACOIND_DATADIR}\" \
+		-daemon \
+		${ASACOIND_OPTS}"
+
+required_files="${ASACOIND_CONFIGFILE}"
+start_stop_daemon_args="-u ${ASACOIND_USER} \
+			-N ${ASACOIND_NICE:-0} -w 2000"
+pidfile="${ASACOIND_PIDFILE}"
+retry=60
+
+depend() {
+	need localmount net
+}
+
+# verify
+# 1) that the datadir exists and is writable (or create it)
+# 2) that a directory for the pid exists and is writable
+# 3) ownership and permissions on the config file
+start_pre() {
+	checkpath \
+	-d \
+	--mode 0750 \
+	--owner "${ASACOIND_USER}:${ASACOIND_GROUP}" \
+	"${ASACOIND_DATADIR}"
+
+	checkpath \
+	-d \
+	--mode 0755 \
+	--owner "${ASACOIND_USER}:${ASACOIND_GROUP}" \
+	"${ASACOIND_PIDDIR}"
+
+	checkpath -f \
+	-o ${ASACOIND_USER}:${ASACOIND_GROUP} \
+	-m 0660 \
+	${ASACOIND_CONFIGFILE}
+
+	checkconfig || return 1
+}
+
+checkconfig()
+{
+	if ! grep -qs '^rpcpassword=' "${ASACOIND_CONFIGFILE}" ; then
+		eerror ""
+		eerror "ERROR: You must set a secure rpcpassword to run asacoind."
+		eerror "The setting must appear in ${ASACOIND_CONFIGFILE}"
+		eerror ""
+		eerror "This password is security critical to securing wallets "
+		eerror "and must not be the same as the rpcuser setting."
+		eerror "You can generate a suitable random password using the following"
+		eerror "command from the shell:"
+		eerror ""
+		eerror "bash -c 'tr -dc a-zA-Z0-9 < /dev/urandom | head -c32 && echo'"
+		eerror ""
+		eerror "It is also recommended that you also set alertnotify so you are "
+		eerror "notified of problems:"
+		eerror ""
+		eerror "ie: alertnotify=echo %%s | mail -s \"Asacoin Alert\"" \
+			"admin@foo.com"
+		eerror ""
+		return 1
+	fi
+}
